@@ -59,36 +59,27 @@ const register = asyncHandler(async(req, res)=>{
     });
     await newEmailVerificationToken.save();
     //Send the OTP to the user
-    const message = `This is the 6 digits to verify your email: ${OTP}` //I need to change the content of this message
+    const message = `<h2> Bonjour ${user.name},</h2> <br/> <p>Voici le code de vérification de votre adresse email:</h2>${OTP}</p>` //I need to change the content of this message
     try {
       await sendEmail({
         email: user.email,
         subject: "Vérification Email",
         message
       });
+
+      generateToken(res, user._id);
+
       res.status(200).json({
-        success: true,
-        data: "Pour finaliser votre inscription, un code de vérification vous a été envoyé à votre adresse e-mail"
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        isAdmin: user.isAdmin,
+        isVerified: user.isVerified
       });
     } catch (error) {
         res.status(400);
-        throw new Error("Code est invalide");
+        throw new Error("Une erreur s'est produite lors de votre inscription.");
     }
-    
-    // Save the user
-    if(user){
-        generateToken(res, user._id);
-        
-        res.status(201).json({
-            _id: user._id,
-            name: user.name,
-            email: user.email,
-            isAdmin: user.isAdmin,
-        });
-    }else{
-        res.status(400);
-        throw new Error("Information invalide");
-    };
 });
 
 //@desc     Email Verifcation
@@ -130,7 +121,7 @@ const validateEmailVerif = asyncHandler(async(req, res) => {
 
   await EmailVerifToken.findByIdAndDelete(token._id);
 
-  const message = `<h1>Bienvenue chez movie-app</h1>` //I need to change the content of this message
+  const message = `<h1>Bonjour ${user.name},</h1> <br/><p>Bienvenue chez movie-app</p>` //I need to change the content of this message
   try {
     await sendEmail({
       email: user.email,
@@ -232,7 +223,7 @@ const forgotPassword = asyncHandler(async(req, res) => {
   await user.save({validateBeforeSave: false});
 
   //Create reset Url
-  const resetUrl = `${process.env.FRONTEND_URL}/resetpassword/${resetToken}`;
+  const resetUrl = `${process.env.FRONTEND_URL}/reset-password/${resetToken}`;
 
 
   const message = getResetPasswordTemplate(user?.name, resetUrl);

@@ -520,7 +520,7 @@ export const getResetPasswordTemplate = (username, resetUrl) => `
                             cet email ou
                           <a href="{{support_url}}">contacter notre équipe support</a> pour plus d'information.
                         </p>
-                        <p>Merci, <br />L'équipe Shopit</p>
+                        <p>Merci, <br />L'équipe MOVIE-APP-V2</p>
 
                         <table class="body-sub" role="presentation">
                           <tr>

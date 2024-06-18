@@ -19,8 +19,8 @@ router.route('/register').post(register);
 router.route('/email-verification').post(validateEmailVerif);
 router.route('/resend-email-verification').post(resendEmailValidation);
 router.route('/logout').post(logout);
-router.route("/forgotpassword").post(forgotPassword);
-router.route("/resetpassword/:token").put(resetpassword);
+router.route("/forgot-password").post(forgotPassword);
+router.route("/reset-password/:token").put(resetpassword);
 
 
 export default router;
