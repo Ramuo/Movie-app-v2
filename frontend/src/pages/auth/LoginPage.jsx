@@ -83,7 +83,7 @@ const LoginPage = () => {
                         <div className="form-control mt-6">
                             <button className="btn btn-primary text-white">
                                 {isLoading ? (
-                                    <span className="loading loading-dots loading-md"></span>
+                                    <span className="loading loading-dots loading-lg"></span>
                                 ) : (
                                     "Envoyer"
                                 )}

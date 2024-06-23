@@ -2,7 +2,6 @@ import express from 'express';
 import {
     register,
     validateEmailVerif,
-    resendEmailValidation,
     login,
     logout,
     forgotPassword,
@@ -17,7 +16,6 @@ const router = express.Router();
 router.route('/login').post(login);
 router.route('/register').post(register);
 router.route('/email-verification').post(validateEmailVerif);
-router.route('/resend-email-verification').post(resendEmailValidation);
 router.route('/logout').post(logout);
 router.route("/forgot-password").post(forgotPassword);
 router.route("/reset-password/:token").put(resetpassword);

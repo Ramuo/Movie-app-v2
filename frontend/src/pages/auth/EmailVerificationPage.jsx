@@ -1,11 +1,14 @@
 import {useState, useEffect, useRef}from 'react';
-import {useLocation, useNavigate} from 'react-router-dom';
-import {useSelector} from 'react-redux';
+import {useLocation, useNavigate, Link} from 'react-router-dom';
+import {useSelector, useDispatch} from 'react-redux';
 import {toast} from 'react-toastify';
 
 
 
-import {useEmailVerificationMutation} from "../../slices/userApiSlice";
+import {
+    useEmailVerificationMutation,
+} from "../../slices/userApiSlice";
+import {setCredentials} from "../../slices/authSlice";
 
 
 
@@ -26,6 +29,7 @@ const isValidOTP = (otp) => {
 
 const EmailVerificationPage = () => {
     const navigate = useNavigate();
+    const dispatch = useDispatch()
 
     const {userInfo} = useSelector((state) => state.auth);
     
@@ -87,8 +91,9 @@ const EmailVerificationPage = () => {
            toast.error("Code de vérification invalide");
         }else{
             try {
-                await emailVerification({userId: userInfo._id, OTP: otp.join("")}).unwrap();
-                navigate('/');
+                const res = await emailVerification({userId: userInfo._id, OTP: otp.join("")}).unwrap();
+                dispatch(setCredentials({...res}))
+                setTimeout(navigate, 0, "/");
                 toast.success("Votre adresse e-mail a été verifiée avec succès.")
             } catch (err) {
                 toast.error(err?.data?.message || err.error);
@@ -96,7 +101,6 @@ const EmailVerificationPage = () => {
             }
         }
     }
-
 
     return (
         <div className="flex items-center justify-center">  

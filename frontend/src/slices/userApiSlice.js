@@ -25,6 +25,7 @@ const userApiSlice = apiSlice.injectEndpoints({
                 method: 'POST',
                 body: data
             }),
+            invalidatesTags: ['User']
         }),
         logout: builder.mutation({
             query: () => ({
@@ -45,16 +46,8 @@ const userApiSlice = apiSlice.injectEndpoints({
                 method: 'PUT',
                 body: data
             }),
-            invalidatesTags: ['Users'],
+            invalidatesTags: ['User'],
         }),
-        // resetpassword: builder.mutation({
-        //     query: ({token, body }) => ({
-        //         url: `${USERS_URL}/reset-password/${token}`,
-        //         method: 'PUT',
-        //         body,
-        //     }),
-        //     invalidatesTags: ['Users'],
-        // }),
     }),
 });
 

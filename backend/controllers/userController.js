@@ -66,20 +66,16 @@ const register = asyncHandler(async(req, res)=>{
         subject: "Vérification Email",
         message
       });
-
-      generateToken(res, user._id);
-
-      res.status(200).json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        isAdmin: user.isAdmin,
-        isVerified: user.isVerified
-      });
     } catch (error) {
         res.status(400);
         throw new Error("Une erreur s'est produite lors de votre inscription.");
     }
+
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+    });
 });
 
 //@desc     Email Verifcation
@@ -128,74 +124,21 @@ const validateEmailVerif = asyncHandler(async(req, res) => {
       subject: "Bienvenue",
       message
     });
+    generateToken(res, user._id);
+
     res.status(200).json({
-      success: true,
-      data: "L'adresse E-mail a été vérifiée"
-    });
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      isAdmin: user.isAdmin,
+      isVerified: user.isVerified
+    });   
   } catch (error) {
       res.status(400);
       throw new Error("Information invalide");
   };
-
-  res.json({message: "Votre E-mail a été vérifiée"});
-
 });
 
-//@desc     Resend email Verifcation
-//@route    POST /api/users/resend-email-verification
-//@access   Private
-const resendEmailValidation = asyncHandler (async (req, res) => {
-  const { userId } = req.body;
-
-  const user = await User.findById(userId);
-  if (!user){
-    res.status(404);
-    throw new Error("Aucun utilisateur trouvé avec les informations qui ont été fournies.");
-  };
-
-  if (user.isVerified){
-    res.status(404);
-    throw new Error("L'utilisateur est déjà vérifié");
-  };
-
-  const alreadyHasToken = await EmailVerifToken.findOne({
-    owner: userId,
-  });
-
-  if (alreadyHasToken){
-    res.status(400);
-    throw new Error("Veiller réessayé après une heure, merci");
-  };
-
-  //Generate 6 OTP digit
-  let OTP = generateOTP();
-
-  // Store OTP in DB
-  const newEmailVerificationToken = new EmailVerifToken({
-    owner: user._id, 
-    token: OTP
-  });
-
-  await newEmailVerificationToken.save();
-
-  //Send the OTP to the user
-  const message = `<p>Voici le code de vrification de votre email</p>: <h1>${OTP}</h1>` //I need to change the content of this message
-  try {
-    await sendEmail({
-      email: user.email,
-      subject: "Renvoyer code de vérification",
-      message
-    });
-    res.status(200).json({
-      success: true,
-      data: "Un code de vérification vous a été envoyé à votre adresse e-mail"
-    });
-  } catch (error) {
-      res.status(400);
-      throw new Error("Code est invalide");
-  }
-  res.status(200).json({message: "Une nouveau code de vérification vous a été envoyé à votre adresse email"})
-});
 
 //@desc     Logout / Clear the cookie
 //@route    POST /api/auth/logout
@@ -279,7 +222,6 @@ const  resetpassword = asyncHandler(async(req, res) => {
   user.resetPasswordToken = undefined;
   user.resetPasswordExpire = undefined;
   
-  console.log( user.password)
 
   await user.save();
 
@@ -297,7 +239,6 @@ const  resetpassword = asyncHandler(async(req, res) => {
 export {
     register,
     validateEmailVerif,
-    resendEmailValidation,
     login,
     logout,
     forgotPassword,
